@@ -1,0 +1,11 @@
+# ¿Es IA? - Dependencias del Motor Forense Real
+#
+# Para procesamiento forense real de imágenes y vídeos (FFT 2D, ELA, PRNU, OpenCV):
+numpy>=1.26.0
+pillow>=10.2.0
+opencv-python>=4.9.0
+requests>=2.31.0
+
+# Opcionales para desplegar con frameworks alternativos:
+# fastapi>=0.110.0
+# uvicorn>=0.28.0

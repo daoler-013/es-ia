@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Es IA? - Detector de Imágenes y Vídeos Generados por Inteligencia Artificial</title>
+  <meta name="description" content="Analiza imágenes y vídeos cortos para detectar si han sido generados o alterados por inteligencia artificial y modelos de difusión.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Fondo con efecto de luz radial sutil -->
+  <div class="bg-glow-top"></div>
+  <div class="bg-glow-bottom"></div>
+
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12h20M12 2v20"></path>
+            <circle cx="12" cy="12" r="7"></circle>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>¿Es IA?</h1>
+          <span class="badge-tag">Detector Forense</span>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">Motor Forense Real (FFT 2D + PRNU + OpenCV)</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="hero-section">
+      <h2 class="hero-title">Verifica la autenticidad de <span class="gradient-text">cualquier imagen o vídeo</span></h2>
+      <p class="hero-subtitle">
+        Sube un archivo multimedia o pega un enlace para analizar artefactos visuales, consistencia temporal y patrones de difusión sintética.
+      </p>
+    </section>
+
+    <!-- Tarjeta Principal de Análisis -->
+    <div class="card analyzer-card">
+      
+      <!-- Pestañas: Subir archivo / Pegar URL -->
+      <div class="input-tabs" role="tablist">
+        <button id="tabUpload" class="tab-btn active" role="tab" aria-selected="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Subir Archivo
+        </button>
+        <button id="tabUrl" class="tab-btn" role="tab" aria-selected="false">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Pegar Enlace
+        </button>
+      </div>
+
+      <!-- Modo 1: Zona de Arrastrar / Subir Archivos -->
+      <div id="uploadPanel" class="tab-panel active">
+        <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Zona para arrastrar y soltar archivos">
+          <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp,video/mp4,video/webm,video/quicktime" hidden>
+          
+          <div class="dropzone-content">
+            <div class="dropzone-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                <circle cx="9" cy="9" r="2"></circle>
+                <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"></path>
+              </svg>
+            </div>
+            <p class="dropzone-title">Arrastra y suelta tu imagen o vídeo corto</p>
+            <p class="dropzone-sub">o haz <span class="highlight-text">clic aquí</span> para buscar en tu dispositivo</p>
+            <div class="dropzone-tags">
+              <span>JPG</span>
+              <span>PNG</span>
+              <span>WEBP</span>
+              <span>MP4</span>
+              <span>WEBM</span>
+              <span class="muted-tag">Hasta 50 MB</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modo 2: Panel de URL -->
+      <div id="urlPanel" class="tab-panel">
+        <div class="url-input-container">
+          <label for="urlInput" class="input-label">URL directa de imagen o vídeo</label>
+          <div class="url-field-wrap">
+            <svg class="url-field-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="2" y1="12" x2="22" y2="12"></line>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <input type="url" id="urlInput" placeholder="https://ejemplo.com/muestra-ia.png o video.mp4" spellcheck="false">
+            <button id="btnClearUrl" class="btn-clear hidden" title="Limpiar URL">&times;</button>
+          </div>
+          <div class="quick-samples">
+            <span class="quick-samples-label">Probar ejemplo:</span>
+            <button type="button" class="sample-chip" data-url="https://images.unsplash.com/photo-1544005313-94ddf0286df2">
+              📸 Retrato Fotográfico Real
+            </button>
+            <button type="button" class="sample-chip" data-url="https://assets.example.com/midjourney-synthetic-face.webp">
+              🤖 Creación Sintética (Midjourney/Flux)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vista Previa del Archivo Seleccionado -->
+      <div id="previewContainer" class="preview-container hidden">
+        <div class="preview-header">
+          <div class="preview-meta">
+            <span id="previewBadge" class="file-type-badge">Imagen</span>
+            <span id="previewFilename" class="file-name">nombre_archivo.jpg</span>
+            <span id="previewFilesize" class="file-size">1.2 MB</span>
+          </div>
+          <button id="btnRemoveFile" class="btn-icon-subtle" title="Eliminar archivo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="media-viewport">
+          <img id="imagePreview" class="preview-media hidden" alt="Vista previa de imagen">
+          <video id="videoPreview" class="preview-media hidden" controls playsinline></video>
+          <div id="urlPreviewCard" class="url-preview-card hidden">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+            <div class="url-preview-info">
+              <span class="url-title">Enlace listo para inspección remota</span>
+              <span id="urlPreviewText" class="url-destination"></span>
+            </div>
+          </div>
+          <!-- Capa de escaneo durante el análisis -->
+          <div id="scannerOverlay" class="scanner-overlay hidden">
+            <div class="scanner-laser"></div>
+            <div class="scanner-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selector de Modo de Prueba (Para pruebas visuales fluidas) -->
+      <div class="test-mode-container">
+        <span class="test-mode-label">Modo de evaluación:</span>
+        <div class="test-mode-options">
+          <label class="mode-pill active">
+            <input type="radio" name="testMode" value="auto" checked>
+            <span>⚡ Auto (Predictivo)</span>
+          </label>
+          <label class="mode-pill">
+            <input type="radio" name="testMode" value="force_ai">
+            <span>🤖 Forzar IA</span>
+          </label>
+          <label class="mode-pill">
+            <input type="radio" name="testMode" value="force_real">
+            <span>📸 Forzar Real</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Botón de Acción Principal -->
+      <div class="action-footer">
+        <button id="btnAnalyze" class="btn-primary" disabled>
+          <span class="btn-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            </svg>
+            Analizar con IA
+          </span>
+          <span class="btn-loading hidden">
+            <span class="spinner"></span>
+            Procesando...
+          </span>
+        </button>
+      </div>
+
+      <!-- Estado de Carga / Proceso Dinámico -->
+      <div id="processingState" class="processing-state hidden">
+        <div class="processing-animation">
+          <div class="pulse-ring"></div>
+          <div class="pulse-core"></div>
+        </div>
+        <p id="processingStep" class="processing-step">Iniciando inspección espectral...</p>
+        <div class="mini-progress-bar">
+          <div id="miniProgressFill" class="mini-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DE RESULTADOS -->
+    <section id="resultsSection" class="results-section hidden">
+      <div class="card result-card">
+        <div class="result-header">
+          <div class="result-header-left">
+            <span class="section-label">Informe Forense de Autenticidad</span>
+            <span id="resEngineBadge" class="engine-badge">Motor Forense Real v2.0</span>
+          </div>
+          <span id="resTimestamp" class="result-date">Hoy</span>
+        </div>
+
+        <div id="technicalSpecsStrip" class="technical-specs-strip hidden">
+          <!-- Especificaciones técnicas calculadas dinámicamente -->
+        </div>
+
+        <div class="verdict-banner-container">
+          <!-- Medidor Radial / Circular -->
+          <div class="gauge-wrapper">
+            <svg class="radial-gauge" viewBox="0 0 160 160">
+              <circle class="gauge-bg" cx="80" cy="80" r="68"></circle>
+              <circle id="gaugeFill" class="gauge-progress" cx="80" cy="80" r="68"></circle>
+            </svg>
+            <div class="gauge-center-text">
+              <span id="gaugePercentage" class="gauge-number">0%</span>
+              <span class="gauge-caption">Probabilidad IA</span>
+            </div>
+          </div>
+
+          <!-- Veredicto Visual -->
+          <div class="verdict-details">
+            <div class="verdict-pill-wrap">
+              <span id="verdictBadge" class="verdict-badge verdict-ai">GENERADO POR IA</span>
+              <span id="confidenceTag" class="confidence-tag">Confianza: Alta</span>
+            </div>
+            <h3 id="verdictHeadline" class="verdict-headline">Detección Positiva de Síntesis Artificial</h3>
+            <p id="verdictSummary" class="verdict-summary">
+              Se han localizado patrones no biológicos en texturas y gradientes de luz artificiales.
+            </p>
+          </div>
+        </div>
+
+        <!-- Barras de Probabilidad Comparadas -->
+        <div class="probability-split">
+          <div class="split-col">
+            <div class="split-label">
+              <span>Sintético (IA)</span>
+              <strong id="splitAiPercent" class="color-ai">88%</strong>
+            </div>
+            <div class="split-track">
+              <div id="splitAiFill" class="split-fill bg-ai" style="width: 88%"></div>
+            </div>
+          </div>
+          <div class="split-col">
+            <div class="split-label">
+              <span>Humano / Real</span>
+              <strong id="splitRealPercent" class="color-real">12%</strong>
+            </div>
+            <div class="split-track">
+              <div id="splitRealFill" class="split-fill bg-real" style="width: 12%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desglose de Indicadores Forenses -->
+        <div class="indicators-section">
+          <h4 class="indicators-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+            Vectores de Inspección Forense
+          </h4>
+          <div id="indicatorsGrid" class="indicators-grid">
+            <!-- Se generará dinámicamente con JavaScript -->
+          </div>
+        </div>
+
+        <!-- Acciones del Resultado -->
+        <div class="results-actions">
+          <button id="btnReset" class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            Analizar otro archivo
+          </button>
+          <button id="btnCopyReport" class="btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+            </svg>
+            Copiar resumen
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Informativa / Cómo Funciona -->
+    <section class="info-section">
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon">🔬</div>
+          <h4>Análisis Espectral</h4>
+          <p>Los modelos de difusión dejan huellas matemáticas en frecuencias altas que las cámaras ópticas no generan.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🧬</div>
+          <h4>Consistencia Anatómica</h4>
+          <p>Evaluación de bordes, simetría ocular, texturas de piel y coherencia de sombras respecto al foco de luz.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">🛡️</div>
+          <h4>Listo para Producción</h4>
+          <p>Arquitectura desacoplada preparada para conectar APIs comerciales de detección (Hive, Sightengine, Sensity).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p><strong>¿Es IA?</strong> &bull; Prototipo de detección de medios sintéticos &bull; Prototipado Full-Stack</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
